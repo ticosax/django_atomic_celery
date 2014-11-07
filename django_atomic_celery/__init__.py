@@ -2,6 +2,7 @@ import logging
 import threading
 from collections import defaultdict
 from celery.task import task as base_task, Task
+from django.conf import settings
 from django.dispatch import receiver
 from django.db import DEFAULT_DB_ALIAS
 from functools import partial
@@ -91,7 +92,8 @@ class PostTransactionTask(Task):
 
         t = ConditionalTask(cls, args, kwargs, *a, **kw)
 
-        if task_queue_stack:
+        if task_queue_stack and not getattr(settings,
+                                            'CELERY_ALWAYS_EAGER', False):
             logger.debug('Scheduling task %s if transaction block is '
                          'successful' % (t.description))
             task_queue_stack[-1].append(t)
