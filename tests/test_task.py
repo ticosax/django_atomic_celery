@@ -6,7 +6,7 @@ from django.db import transaction
 from django.conf import settings
 from django.test import TestCase
 from django_atomic_celery.testing import DjangoAtomicCeleryTestCaseMixin
-from .tasks import task
+from .tasks import returning_task, task
 
 
 class TaskTestCase(DjangoAtomicCeleryTestCaseMixin, TestCase):
@@ -132,3 +132,12 @@ class TaskTestCase(DjangoAtomicCeleryTestCaseMixin, TestCase):
         self._test_behavior(task.apply_async)
         self._test_behavior(task.apply_async, args=())
         self._test_behavior(task.apply_async, kwargs={})
+
+
+class EagerTestCase(TestCase):
+
+    def test_celery_always_eager(self):
+        with self.settings(CELERY_ALWAYS_EAGER=True):
+            sentinel = object()
+            self.assertTrue(
+                returning_task.apply_async(args=(sentinel,)).get() is sentinel)

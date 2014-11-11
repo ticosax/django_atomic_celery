@@ -28,8 +28,8 @@ class ConditionalTask(object):
         """Schedule the conditional task.
         """
 
-        self.task_cls.original_apply_async(*self.task_args,
-                                           **self.task_kwargs)
+        return self.task_cls.original_apply_async(*self.task_args,
+                                                  **self.task_kwargs)
 
     @property
     def name(self):
