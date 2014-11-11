@@ -135,8 +135,16 @@ class TaskTestCase(DjangoAtomicCeleryTestCaseMixin, TestCase):
 
 
 class EagerTestCase(TestCase):
+    """
+    Check here behaviour of django_atomic_celery related to
+    CELERY_ALWAYS_EAGER settings
+    """
 
     def test_celery_always_eager(self):
+        """
+        task.apply_async() should return immediately
+        because CELERY_ALWAYS_EAGER is True
+        """
         with self.settings(CELERY_ALWAYS_EAGER=True):
             sentinel = object()
             self.assertTrue(
